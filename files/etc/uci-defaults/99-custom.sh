@@ -96,7 +96,7 @@ elif [ "$count" -gt 1 ]; then
     # LAN口设置静态IP
     uci set network.lan.proto='static'
     # 多网口设备 支持修改为别的管理后台地址 在Github Action 的UI上自行输入即可 
-    uci set network.lan.netmask='255.255.255.0'
+    uci set network.lan.netmask='255.255.0.0'
     # 设置路由器管理后台地址
     IP_VALUE_FILE="/etc/config/custom_router_ip.txt"
     if [ -f "$IP_VALUE_FILE" ]; then
@@ -105,8 +105,8 @@ elif [ "$count" -gt 1 ]; then
         uci set network.lan.ipaddr=$CUSTOM_IP
         echo "custom router ip is $CUSTOM_IP" >> $LOGFILE
     else
-        uci set network.lan.ipaddr='192.168.100.1'
-        echo "default router ip is 192.168.100.1" >> $LOGFILE
+        uci set network.lan.ipaddr='172.17.0.1'
+        echo "default router ip is 172.17.0.1" >> $LOGFILE
     fi
 
     # PPPoE设置
@@ -128,7 +128,7 @@ elif [ "$count" -gt 1 ]; then
 fi
 
 # 若安装了dockerd 则设置docker的防火墙规则
-# 扩大docker涵盖的子网范围 '172.16.0.0/12'
+# 扩大docker涵盖的子网范围 '177.16.0.0/12'
 # 方便各类docker容器的端口顺利通过防火墙 
 if command -v dockerd >/dev/null 2>&1; then
     echo "检测到 Docker，正在配置防火墙规则..."
@@ -157,7 +157,7 @@ config zone 'docker'
   option output 'ACCEPT'
   option forward 'ACCEPT'
   option name 'docker'
-  list subnet '172.16.0.0/12'
+  list subnet '177.16.0.0/12'
 
 config forwarding
   option src 'docker'
